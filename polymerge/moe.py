@@ -67,6 +67,33 @@ class MoEAssembler:
         processed_mlp_prefixes = set()
         total_bytes = 0
 
+        # Pre-scan for MTP (Multi-Token Prediction / nextn) and MLP-only layers:
+        # Any layer that contains `.nextn.` or layers >= num_hidden_layers are MTP speculative layers.
+        # In llama.cpp and Qwen official spec, MTP layers are always DENSE, never MoE.
+        mtp_layer_indices = set()
+        for tname in base_tensors:
+            m_nextn = re.search(r"model\.layers\.(\d+)\.nextn\.", tname)
+            if m_nextn:
+                mtp_layer_indices.add(int(m_nextn.group(1)))
+
+        cfg_path = self.base_model_path / "config.json"
+        if cfg_path.exists():
+            try:
+                with open(cfg_path, "r", encoding="utf-8") as f:
+                    b_cfg = json.load(f)
+                sub_t = b_cfg.get("text_config", b_cfg)
+                num_main_layers = sub_t.get("num_hidden_layers")
+                if num_main_layers is not None:
+                    # Layers at or above num_hidden_layers are MTP blocks
+                    for tname in base_tensors:
+                        m_l = re.search(r"model\.layers\.(\d+)\.", tname)
+                        if m_l and int(m_l.group(1)) >= num_main_layers:
+                            mtp_layer_indices.add(int(m_l.group(1)))
+                for mlp_only_l in sub_t.get("mlp_only_layers", []):
+                    mtp_layer_indices.add(int(mlp_only_l))
+            except Exception:
+                pass
+
         with create_merge_progress() as progress:
             task = progress.add_task("[cyan]Processing base & routing...", total=len(base_tensors))
 
@@ -76,23 +103,13 @@ class MoEAssembler:
                 # Never convert vision/multimodal encoder MLPs into MoE experts
                 is_vision_tensor = any(v in name.lower() for v in ("visual.", "vision_tower.", "vision_model.", "mm_projector.", "multi_modal_projector.", "clip.", "vit."))
                 
-                # Check for MTP (Multi-Token Prediction / speculative nextn) layers:
-                # In Qwen3.5/Qwen3.6 with num_hidden_layers=N, layers 0..N-1 are main transformer blocks.
-                # Layer N (e.g. layer 24) is the MTP layer. In official architecture, MTP MLP is DENSE, not MoE!
+                # Check if this tensor belongs to an MTP layer or has .nextn.
                 is_mtp_layer = False
                 m_layer = re.search(r"model\.layers\.(\d+)\.", name)
-                if m_layer:
-                    cfg_path = self.base_model_path / "config.json"
-                    if cfg_path.exists():
-                        try:
-                            with open(cfg_path, "r", encoding="utf-8") as f:
-                                base_cfg = json.load(f)
-                            sub_t_cfg = base_cfg.get("text_config", base_cfg)
-                            main_layers = sub_t_cfg.get("num_hidden_layers", 24)
-                            if int(m_layer.group(1)) >= main_layers:
-                                is_mtp_layer = True
-                        except Exception:
-                            pass
+                if m_layer and int(m_layer.group(1)) in mtp_layer_indices:
+                    is_mtp_layer = True
+                if ".nextn." in name:
+                    is_mtp_layer = True
 
                 mlp_info = None if (is_vision_tensor or is_mtp_layer) else detect_dense_mlp(name)
 
