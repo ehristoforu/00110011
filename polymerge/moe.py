@@ -164,27 +164,53 @@ class MoEAssembler:
             with open(cfg_path, "r", encoding="utf-8") as f:
                 cfg = json.load(f)
 
+            is_vl = "vision_config" in cfg or "qwen3_vl" in cfg.get("model_type", "") or "qwen3_5" in str(cfg.get("model_type", "")) or "image_token_id" in cfg
+            sub_text_cfg = cfg.get("text_config") if isinstance(cfg.get("text_config"), dict) else None
+
             if self.target_format == "mixtral":
                 cfg["model_type"] = "mixtral"
                 cfg["architectures"] = ["MixtralForCausalLM"]
                 cfg["num_local_experts"] = num_experts
                 cfg["num_experts_per_tok"] = min(2, num_experts)
+                if sub_text_cfg:
+                    sub_text_cfg["num_local_experts"] = num_experts
+                    sub_text_cfg["num_experts_per_tok"] = min(2, num_experts)
             elif self.target_format == "qwen":
-                cfg["model_type"] = "qwen2_moe"
-                cfg["architectures"] = ["Qwen2MoeForCausalLM"]
+                if is_vl:
+                    # Qwen3-VL / Qwen3.5 Multimodal Architecture
+                    cfg["model_type"] = "qwen3_vl_moe" if "qwen3" in str(cfg.get("model_type", "")) or (sub_text_cfg and "qwen3" in str(sub_text_cfg.get("model_type", ""))) else "qwen2_5_vl_moe"
+                    cfg["architectures"] = ["Qwen3VLMoEForConditionalGeneration"] if "qwen3" in cfg["model_type"] else ["Qwen2_5_VLMoEForConditionalGeneration"]
+                else:
+                    cfg["model_type"] = "qwen2_moe"
+                    cfg["architectures"] = ["Qwen2MoeForCausalLM"]
+
+                active_experts = min(2, num_experts) if num_experts >= 4 else min(1, num_experts)
                 cfg["num_experts"] = num_experts
-                cfg["num_experts_per_tok"] = min(8, num_experts)
+                cfg["num_experts_per_tok"] = active_experts
+
+                if sub_text_cfg:
+                    sub_text_cfg["num_experts"] = num_experts
+                    sub_text_cfg["num_experts_per_tok"] = active_experts
             elif self.target_format == "deepseek":
                 cfg["model_type"] = "deepseek_v2"
                 cfg["architectures"] = ["DeepseekV2ForCausalLM"]
                 cfg["n_routed_experts"] = num_experts
                 cfg["num_experts_per_tok"] = min(6, num_experts)
+                if sub_text_cfg:
+                    sub_text_cfg["n_routed_experts"] = num_experts
+                    sub_text_cfg["num_experts_per_tok"] = min(6, num_experts)
             elif self.target_format == "gemma":
                 cfg["num_local_experts"] = num_experts
                 cfg["num_experts_per_tok"] = min(8, num_experts)
+                if sub_text_cfg:
+                    sub_text_cfg["num_local_experts"] = num_experts
+                    sub_text_cfg["num_experts_per_tok"] = min(8, num_experts)
             else:
                 cfg["num_local_experts"] = num_experts
                 cfg["num_experts_per_tok"] = min(2, num_experts)
+                if sub_text_cfg:
+                    sub_text_cfg["num_local_experts"] = num_experts
+                    sub_text_cfg["num_experts_per_tok"] = min(2, num_experts)
 
             with open(out_path / "config.json", "w", encoding="utf-8") as f:
                 json.dump(cfg, f, indent=2)
