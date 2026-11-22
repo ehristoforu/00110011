@@ -1,0 +1,13 @@
+# NearSwap & NuSLERP Curvature Merge Configuration
+# Interpolates weights while preserving local parameter geometry
+merge_method: nearswap
+base_model: meta-llama/Llama-3.2-1B
+models:
+  - model: meta-llama/Llama-3.2-1B-Instruct
+    weight: 0.6
+  - model: princeton-nlp/Llama-3-Base-8B-SFT
+    weight: 0.4
+parameters:
+  t: 0.5
+ignore_vision: true
+dtype: bfloat16

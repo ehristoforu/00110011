@@ -1,0 +1,8 @@
+models:
+  - google/gemma-2-9b-it
+  - google/gemma-2-9b
+  - unsloth/gemma-2-9b-bnb-4bit
+base_model: google/gemma-2-9b
+target_format: gemma
+gate_mode: uniform_random
+chunk_size_bytes: 4000000000

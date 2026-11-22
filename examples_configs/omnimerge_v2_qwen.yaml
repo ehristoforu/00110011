@@ -1,0 +1,19 @@
+models:
+  - model: Qwen/Qwen2.5-Coder-7B-Instruct
+    weight: 0.45
+    density: 0.55
+  - model: deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+    weight: 0.55
+    density: 0.55
+merge_method: omnimerge_v2
+base_model: Qwen/Qwen2.5-7B
+parameters:
+  darex_q: 0.75
+  features: ["obim", "darex", "emr"]
+dtype: bfloat16
+ignore_vision: true
+skip_patterns:
+  - "mlp.gate_proj"
+  - "mlp.up_proj"
+  - "mlp.down_proj"
+chunk_size_bytes: 2000000000

@@ -1,0 +1,15 @@
+# Karcher Mean (Riemannian Manifold Center) Configuration
+# Computes the geometric centroid of multiple model weights on the sphere
+merge_method: karcher
+models:
+  - model: Qwen/Qwen2.5-7B-Instruct
+    weight: 0.34
+  - model: deepseek-ai/DeepSeek-R1-Distill-Qwen-7B
+    weight: 0.33
+  - model: Qwen/Qwen2.5-Coder-7B-Instruct
+    weight: 0.33
+parameters:
+  max_iter: 15
+  tolerance: 1e-4
+ignore_vision: true
+dtype: bfloat16

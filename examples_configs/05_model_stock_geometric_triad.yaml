@@ -1,0 +1,11 @@
+models:
+  - model: meta-llama/Llama-3.1-8B-Instruct
+    weight: 0.35
+  - model: cognitivecomputations/dolphin-2.9.2-qwen2-7b
+    weight: 0.35
+  - model: NousResearch/Hermes-3-Llama-3.1-8B
+    weight: 0.30
+merge_method: model_stock
+base_model: meta-llama/Llama-3.1-8B
+dtype: bfloat16
+ignore_vision: true

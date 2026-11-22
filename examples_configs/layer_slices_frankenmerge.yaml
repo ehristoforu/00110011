@@ -1,0 +1,9 @@
+slices:
+  - sources:
+      - model: meta-llama/Llama-3.2-1B
+        layer_range: [0, 12]
+  - sources:
+      - model: meta-llama/Llama-3.2-1B-Instruct
+        layer_range: [8, 16]
+merge_method: passthrough
+dtype: bfloat16

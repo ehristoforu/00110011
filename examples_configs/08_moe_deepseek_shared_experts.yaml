@@ -1,0 +1,8 @@
+models:
+  - deepseek-ai/DeepSeek-V2-Lite-Chat
+  - deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct
+base_model: deepseek-ai/DeepSeek-V2-Lite
+shared_expert: deepseek-ai/DeepSeek-V2-Lite
+target_format: deepseek
+gate_mode: uniform_random
+chunk_size_bytes: 3000000000

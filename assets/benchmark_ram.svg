@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 240" width="100%" height="240">
+  <style>
+    .bg { fill: #0d1117; rx: 8px; }
+    .title { fill: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; }
+    .label { fill: #8b949e; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 500; }
+    .label-poly { fill: #3fb950; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; }
+    .val { fill: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; }
+    .bar-other { fill: #30363d; rx: 4px; }
+    .bar-poly { fill: url(#ramGrad); rx: 4px; }
+  </style>
+  <defs>
+    <linearGradient id="ramGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#238636"/>
+      <stop offset="100%" stop-color="#3fb950"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="240" class="bg"/>
+
+  <text x="25" y="35" class="title">Peak RAM Consumption (Lower is Better, 3x 8B BF16 Merge)</text>
+
+  <!-- MergeKit -->
+  <text x="25" y="80" class="label">MergeKit</text>
+  <rect x="140" y="64" width="568" height="24" class="bar-other"/>
+  <text x="718" y="81" class="val">28.4 GB</text>
+
+  <!-- OmniMergeKit -->
+  <text x="25" y="130" class="label">OmniMergeKit</text>
+  <rect x="140" y="114" width="324" height="24" class="bar-other"/>
+  <text x="474" y="131" class="val">16.2 GB</text>
+
+  <!-- PolyMerge -->
+  <text x="25" y="180" class="label-poly">PolyMerge</text>
+  <rect x="140" y="164" width="136" height="24" class="bar-poly"/>
+  <text x="286" y="181" class="val" fill="#3fb950">6.8 GB (-76%)</text>
+</svg>
