@@ -75,7 +75,26 @@ class MoEAssembler:
                 
                 # Never convert vision/multimodal encoder MLPs into MoE experts
                 is_vision_tensor = any(v in name.lower() for v in ("visual.", "vision_tower.", "vision_model.", "mm_projector.", "multi_modal_projector.", "clip.", "vit."))
-                mlp_info = None if is_vision_tensor else detect_dense_mlp(name)
+                
+                # Check for MTP (Multi-Token Prediction / speculative nextn) layers:
+                # In Qwen3.5/Qwen3.6 with num_hidden_layers=N, layers 0..N-1 are main transformer blocks.
+                # Layer N (e.g. layer 24) is the MTP layer. In official architecture, MTP MLP is DENSE, not MoE!
+                is_mtp_layer = False
+                m_layer = re.search(r"model\.layers\.(\d+)\.", name)
+                if m_layer:
+                    cfg_path = self.base_model_path / "config.json"
+                    if cfg_path.exists():
+                        try:
+                            with open(cfg_path, "r", encoding="utf-8") as f:
+                                base_cfg = json.load(f)
+                            sub_t_cfg = base_cfg.get("text_config", base_cfg)
+                            main_layers = sub_t_cfg.get("num_hidden_layers", 24)
+                            if int(m_layer.group(1)) >= main_layers:
+                                is_mtp_layer = True
+                        except Exception:
+                            pass
+
+                mlp_info = None if (is_vision_tensor or is_mtp_layer) else detect_dense_mlp(name)
 
                 if mlp_info is None:
                     t = base_reader.get_tensor(name)
