@@ -190,9 +190,11 @@ class MoEAssembler:
                     sub_text_cfg["num_experts_per_tok"] = min(2, num_experts)
             elif self.target_format == "qwen":
                 if is_vl:
-                    # Qwen3-VL / Qwen3.5 Multimodal Architecture
-                    cfg["model_type"] = "qwen3_vl_moe" if "qwen3" in str(cfg.get("model_type", "")) or (sub_text_cfg and "qwen3" in str(sub_text_cfg.get("model_type", ""))) else "qwen2_5_vl_moe"
-                    cfg["architectures"] = ["Qwen3VLMoEForConditionalGeneration"] if "qwen3" in cfg["model_type"] else ["Qwen2_5_VLMoEForConditionalGeneration"]
+                    # Native Qwen3.5/Qwen3.6 MoE Vision-Language
+                    cfg["model_type"] = "qwen3_5_moe"
+                    cfg["architectures"] = ["Qwen3_5MoeForConditionalGeneration"]
+                    if sub_text_cfg:
+                        sub_text_cfg["model_type"] = "qwen3_5_moe_text"
                 else:
                     cfg["model_type"] = "qwen2_moe"
                     cfg["architectures"] = ["Qwen2MoeForCausalLM"]
@@ -204,6 +206,11 @@ class MoEAssembler:
                 if sub_text_cfg:
                     sub_text_cfg["num_experts"] = num_experts
                     sub_text_cfg["num_experts_per_tok"] = active_experts
+                    # Update expert intermediate dimension if dense
+                    if "intermediate_size" in sub_text_cfg and "moe_intermediate_size" not in sub_text_cfg:
+                        sub_text_cfg["moe_intermediate_size"] = sub_text_cfg["intermediate_size"]
+                    if "intermediate_size" in sub_text_cfg and "shared_expert_intermediate_size" not in sub_text_cfg:
+                        sub_text_cfg["shared_expert_intermediate_size"] = sub_text_cfg["intermediate_size"]
             elif self.target_format == "deepseek":
                 cfg["model_type"] = "deepseek_v2"
                 cfg["architectures"] = ["DeepseekV2ForCausalLM"]
