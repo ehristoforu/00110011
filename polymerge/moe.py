@@ -72,7 +72,10 @@ class MoEAssembler:
 
             for name in base_tensors:
                 progress.update(task, advance=1, description=f"[cyan]{name[:35]}")
-                mlp_info = detect_dense_mlp(name)
+                
+                # Never convert vision/multimodal encoder MLPs into MoE experts
+                is_vision_tensor = any(v in name.lower() for v in ("visual.", "vision_tower.", "vision_model.", "mm_projector.", "multi_modal_projector.", "clip.", "vit."))
+                mlp_info = None if is_vision_tensor else detect_dense_mlp(name)
 
                 if mlp_info is None:
                     t = base_reader.get_tensor(name)
@@ -87,8 +90,18 @@ class MoEAssembler:
                 processed_mlp_prefixes.add(prefix)
 
                 num_experts = len(expert_readers)
+                # Router dimension must be hidden_size (the input dimension of gate_proj/up_proj)
                 sample_t = base_reader.get_tensor(name)
-                hidden_size = sample_t.shape[-1] if sample_t is not None else 4096
+                if sample_t is not None:
+                    # In PyTorch linear weights are [out_features, in_features]
+                    # For gate_proj / up_proj: in_features is hidden_size (last dimension)
+                    # For down_proj: in_features is intermediate_size (last dimension), out_features is hidden_size (shape[0])
+                    if "down_proj" in name or "w2" in name or "fc2" in name or "c_proj" in name:
+                        hidden_size = sample_t.shape[0]
+                    else:
+                        hidden_size = sample_t.shape[-1]
+                else:
+                    hidden_size = 4096
 
                 if self.target_format == "gemma":
                     gate_proj_name = f"{prefix}.router.proj.weight"
