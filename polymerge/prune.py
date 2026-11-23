@@ -252,17 +252,20 @@ class ModelPruner:
                         total_bytes += new_per_exp.numel() * new_per_exp.element_size()
 
                 # 3. Stream surviving expert weights, dropping omitted ones
-                exp_prefix = f"model.layers.{l_idx}.mlp.experts."
-                matching_exp_keys = [k for k in all_keys if k.startswith(exp_prefix)]
+                # Support both standard model.layers.X and multimodal model.language_model.layers.X
+                exp_prefix_std = f"model.layers.{l_idx}.mlp.experts."
+                exp_prefix_lm = f"model.language_model.layers.{l_idx}.mlp.experts."
+                matching_exp_keys = [k for k in all_keys if k.startswith(exp_prefix_std) or k.startswith(exp_prefix_lm)]
 
                 for old_k in matching_exp_keys:
-                    m = re.match(r"^model\.layers\.\d+\.mlp\.experts\.(\d+)\.(.*)$", old_k)
+                    m = re.match(r"^(model\.(?:language_model\.)?layers\.\d+\.mlp\.experts\.)(\d+)\.(.*)$", old_k)
                     if m:
-                        e_idx = int(m.group(1))
-                        proj_name = m.group(2)
+                        prefix_base = m.group(1)
+                        e_idx = int(m.group(2))
+                        proj_name = m.group(3)
                         if e_idx in surv_map_orig_to_var:
                             new_var_idx = surv_map_orig_to_var[e_idx]
-                            new_k = f"model.layers.{l_idx}.mlp.experts.{new_var_idx}.{proj_name}"
+                            new_k = f"{prefix_base}{new_var_idx}.{proj_name}"
                             t = reader.get_tensor(old_k)
                             if t is not None:
                                 writer.add_tensor(new_k, t)
@@ -270,9 +273,14 @@ class ModelPruner:
 
                 free_memory()
 
-        # Copy all other non-expert weights (attention, norms, embeddings)
+        # Copy all other non-expert weights (attention, norms, embeddings, shared experts, vision)
         for k in all_keys:
-            if not any(k.startswith(f"model.layers.{l}.mlp.experts.") for l in router_keys):
+            is_pruned_expert = False
+            for l in router_keys:
+                if k.startswith(f"model.layers.{l}.mlp.experts.") or k.startswith(f"model.language_model.layers.{l}.mlp.experts."):
+                    is_pruned_expert = True
+                    break
+            if not is_pruned_expert:
                 if k not in router_keys.values() and not k.endswith(".router.per_expert_scale"):
                     t = reader.get_tensor(k)
                     if t is not None:
