@@ -1,12 +1,14 @@
 """
-Clean and fix Qwen3.5 MoE checkpoint (e.g. tstmoe6 -> tstmoe7) for GGUF-my-repo.
+Clean and fix Qwen3.5 MoE checkpoint (e.g. tstmoe6 -> tstmoe8) for GGUF-my-repo.
 
 Removes incomplete/invalid expert tensors from layer 24 (MTP speculative layer),
 converts expert 0 to dense projections (gate_proj, up_proj, down_proj),
+re-generates a clean model.safetensors.index.json matching new weights,
 and uploads the fixed model directly to Hugging Face Hub.
 """
 
 import os
+import json
 import argparse
 import tempfile
 from pathlib import Path
@@ -25,6 +27,9 @@ def fix_repo(src_repo: str, dst_repo: str, target_layer: int = 24):
     st_files = sorted([f for f in os.listdir(model_dir) if f.endswith(".safetensors")])
     print(f"--> Found {len(st_files)} safetensors file(s).")
 
+    new_weight_map = {}
+    total_size = 0
+
     with tempfile.TemporaryDirectory() as tmpdir:
         for fname in st_files:
             fpath = model_dir / fname
@@ -33,7 +38,7 @@ def fix_repo(src_repo: str, dst_repo: str, target_layer: int = 24):
             cleaned = {}
 
             for k, v in tensors.items():
-                # Target layer (24 for Qwen 2B MTP) must be strictly dense
+                # Target layer (layer 24 for Qwen 2B MTP) must be strictly dense
                 if f"model.layers.{target_layer}.mlp.experts" in k:
                     if "experts.0." in k:
                         dense_k = k.replace("mlp.experts.0.", "mlp.")
@@ -44,6 +49,10 @@ def fix_repo(src_repo: str, dst_repo: str, target_layer: int = 24):
                 else:
                     cleaned[k] = v
 
+            for tk, tv in cleaned.items():
+                new_weight_map[tk] = fname
+                total_size += tv.numel() * tv.element_size()
+
             out_file = Path(tmpdir) / fname
             save_file(cleaned, str(out_file))
             print(f"Uploading {fname} to {dst_repo}...")
@@ -53,8 +62,26 @@ def fix_repo(src_repo: str, dst_repo: str, target_layer: int = 24):
                 repo_id=dst_repo
             )
 
-        # Upload config and tokenizer files
+        # Recreate clean model.safetensors.index.json
+        index_data = {
+            "metadata": {"total_size": total_size},
+            "weight_map": new_weight_map
+        }
+        index_file = Path(tmpdir) / "model.safetensors.index.json"
+        with open(index_file, "w", encoding="utf-8") as f:
+            json.dump(index_data, f, indent=2)
+
+        print(f"Uploading regenerated model.safetensors.index.json...")
+        api.upload_file(
+            path_or_fileobj=str(index_file),
+            path_in_repo="model.safetensors.index.json",
+            repo_id=dst_repo
+        )
+
+        # Upload config, tokenizer and other files (excluding old index.json)
         for fname in os.listdir(model_dir):
+            if fname == "model.safetensors.index.json":
+                continue
             if fname.endswith((".json", ".txt", ".model")):
                 api.upload_file(
                     path_or_fileobj=str(model_dir / fname),
@@ -68,8 +95,8 @@ def fix_repo(src_repo: str, dst_repo: str, target_layer: int = 24):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Fix layer 24 experts for Qwen MoE GGUF conversion")
-    parser.add_argument("--src", type=str, default="ehristoforu/tstmoe6", help="Source HF repo")
-    parser.add_argument("--dst", type=str, default="ehristoforu/tstmoe7", help="Destination HF repo")
+    parser.add_argument("--src", type=str, default="ehristoforu/tstmoe7", help="Source HF repo")
+    parser.add_argument("--dst", type=str, default="ehristoforu/tstmoe8", help="Destination HF repo")
     parser.add_argument("--layer", type=int, default=24, help="Target MTP layer to de-MoE (default: 24)")
     args = parser.parse_args()
 
