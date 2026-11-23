@@ -30,13 +30,16 @@ def load_weight_map(model_dir: Path) -> Tuple[Dict[str, str], List[str]]:
     single_files = sorted(glob.glob(str(model_dir / "*.safetensors")))
     if not single_files:
         raise FileNotFoundError(f"No safetensors found in {model_dir}")
-    single_file = Path(single_files[0]).name
     from safetensors import safe_open
     weight_map = {}
-    with safe_open(str(model_dir / single_file), framework="pt", device="cpu") as f:
-        for k in f.keys():
-            weight_map[k] = single_file
-    return weight_map, [single_file]
+    shards = []
+    for sf in single_files:
+        fname = Path(sf).name
+        shards.append(fname)
+        with safe_open(str(model_dir / fname), framework="pt", device="cpu") as f:
+            for k in f.keys():
+                weight_map[k] = fname
+    return weight_map, shards
 
 class SafetensorsReader:
     def __init__(self, model_dir: Path):
