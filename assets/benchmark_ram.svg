@@ -3,17 +3,11 @@
     .bg { fill: #0d1117; rx: 8px; }
     .title { fill: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 600; }
     .label { fill: #8b949e; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 500; }
-    .label-poly { fill: #3fb950; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; }
+    .label-poly { fill: #58a6ff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; }
     .val { fill: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; }
     .bar-other { fill: #30363d; rx: 4px; }
-    .bar-poly { fill: url(#ramGrad); rx: 4px; }
+    .bar-poly { fill: #1f6feb; rx: 4px; }
   </style>
-  <defs>
-    <linearGradient id="ramGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#238636"/>
-      <stop offset="100%" stop-color="#3fb950"/>
-    </linearGradient>
-  </defs>
 
   <rect width="800" height="240" class="bg"/>
 
@@ -32,5 +26,5 @@
   <!-- PolyMerge -->
   <text x="25" y="180" class="label-poly">PolyMerge</text>
   <rect x="140" y="164" width="136" height="24" class="bar-poly"/>
-  <text x="286" y="181" class="val" fill="#3fb950">6.8 GB (-76%)</text>
+  <text x="286" y="181" class="val" fill="#58a6ff">6.8 GB (-76%)</text>
 </svg>
