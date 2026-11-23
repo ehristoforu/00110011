@@ -74,8 +74,28 @@ Locally swaps parameters based on weight delta proximity, creating smooth contin
 
 ---
 
-## 2. Full YAML Configuration Example
+## 2. Full YAML Configuration Examples
 
+### Example A: Standard Task Arithmetic / DARE-TIES Merge
+```yaml
+merge_method: dare_ties
+base_model: meta-llama/Llama-3.2-1B
+models:
+  - model: meta-llama/Llama-3.2-1B-Instruct
+    parameters:
+      weight: 0.6
+      density: 0.5
+  - model: meta-llama/Llama-3.2-1B
+    parameters:
+      weight: 0.4
+      density: 0.5
+parameters:
+  normalize: true
+dtype: bfloat16
+ignore_vision: true
+```
+
+### Example B: Advanced Multi-Model OmniMerge v2
 ```yaml
 merge_method: omnimerge_v2
 base_model: Qwen/Qwen2.5-7B

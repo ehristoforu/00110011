@@ -84,9 +84,32 @@ pip install -e .[all]
 
 ## Quick Usage
 
+### YAML Configuration Specification
+PolyMerge accepts declarative YAML configuration files describing the base model, fine-tunes, weights, densities, and methods.
+
+```yaml
+# config.yaml - Example DARE-TIES Merge
+merge_method: dare_ties
+base_model: meta-llama/Llama-3.2-1B
+models:
+  - model: meta-llama/Llama-3.2-1B-Instruct
+    parameters:
+      weight: 0.6
+      density: 0.5
+  - model: meta-llama/Llama-3.2-1B
+    parameters:
+      weight: 0.4
+      density: 0.5
+parameters:
+  normalize: true
+dtype: bfloat16
+ignore_vision: true
+```
+
 ### Model Merging
 ```bash
-polymerge examples_configs/omnimerge_v2_qwen.yaml -o ./merged_model
+# Run merge from YAML config
+polymerge config.yaml -o ./merged_model
 ```
 
 ### MoE Upcycling

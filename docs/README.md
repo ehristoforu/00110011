@@ -5,9 +5,9 @@ Welcome to the comprehensive documentation for **PolyMerge**, the high-performan
 ## Documentation Index
 
 1. [**Core Merging & Methods**](MERGE_METHODS.md)
-   - Mathematical descriptions of all 9 merge methods (`linear`, `slerp`, `task_arithmetic`, `ties`, `dare_ties`, `della`, `omnimerge_v2`, `model_stock`, `sce`).
+   - Mathematical descriptions of all 12 merge methods (`linear`, `slerp`, `nuslerp`, `karcher`, `nearswap`, `task_arithmetic`, `ties`, `dare_ties`, `della`, `omnimerge_v2`, `model_stock`, `sce`).
    - Pure Safetensors streaming & GGUF quantized merging.
-   - Comprehensive YAML config specifications and parameters.
+   - Comprehensive YAML config specifications and copy-paste examples.
 
 2. [**MoE Upcycling & Architectures**](MOE_UPCYCLING.md)
    - Assembling sparse MoE from dense experts.
