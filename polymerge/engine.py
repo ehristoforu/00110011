@@ -199,3 +199,45 @@ class MergeEngine:
                     dest = out_path / f.name
                     if not dest.exists():
                         shutil.copy2(f, dest)
+
+        # If vision was ignored, sanitize config.json to prevent HF/vLLM from expecting missing vision weights
+        if self.config.ignore_vision:
+            out_cfg_path = out_path / "config.json"
+            if out_cfg_path.exists():
+                try:
+                    with open(out_cfg_path, "r", encoding="utf-8") as f:
+                        cfg = json.load(f)
+
+                    modified = False
+                    # Remove vision_config if visual weights were stripped
+                    if "vision_config" in cfg:
+                        del cfg["vision_config"]
+                        modified = True
+
+                    # Demote VLM architecture to text-only CausalLM if applicable
+                    archs = cfg.get("architectures", [])
+                    new_archs = []
+                    for arch in archs:
+                        if "ConditionalGeneration" in arch or "VL" in arch or "Vision" in arch:
+                            if "Qwen2VL" in arch or "Qwen2_5_VL" in arch:
+                                new_archs.append("Qwen2ForCausalLM")
+                            elif "Qwen3_5Moe" in arch:
+                                new_archs.append("Qwen3_5MoeForCausalLM")
+                            elif "Llama" in arch:
+                                new_archs.append("LlamaForCausalLM")
+                            else:
+                                new_archs.append(arch.replace("ForConditionalGeneration", "ForCausalLM"))
+                            modified = True
+                        else:
+                            new_archs.append(arch)
+
+                    if modified:
+                        cfg["architectures"] = new_archs
+                        # If model_type is VL, demote to base text type
+                        m_type = cfg.get("model_type", "")
+                        if "vl" in m_type:
+                            cfg["model_type"] = m_type.replace("_vl", "").replace("-vl", "")
+                        with open(out_cfg_path, "w", encoding="utf-8") as f:
+                            json.dump(cfg, f, indent=2)
+                except Exception:
+                    pass

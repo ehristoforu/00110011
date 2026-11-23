@@ -82,12 +82,14 @@ class TokenizerTool:
 
         writer.finalize(total_size=total_bytes)
 
-        # Update config.json vocab_size
+        # Update config.json vocab_size (root and text_config)
         cfg_path = base_path / "config.json"
         if cfg_path.exists():
             with open(cfg_path, "r", encoding="utf-8") as f:
                 cfg = json.load(f)
             cfg["vocab_size"] = target_vocab_size
+            if "text_config" in cfg and isinstance(cfg["text_config"], dict):
+                cfg["text_config"]["vocab_size"] = target_vocab_size
             with open(out_path / "config.json", "w", encoding="utf-8") as f:
                 json.dump(cfg, f, indent=2)
 
@@ -145,6 +147,8 @@ class TokenizerTool:
             with open(cfg_path, "r", encoding="utf-8") as f:
                 cfg = json.load(f)
             cfg["vocab_size"] = target_vocab_size
+            if "text_config" in cfg and isinstance(cfg["text_config"], dict):
+                cfg["text_config"]["vocab_size"] = target_vocab_size
             with open(out_path / "config.json", "w", encoding="utf-8") as f:
                 json.dump(cfg, f, indent=2)
 

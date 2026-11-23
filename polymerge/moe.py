@@ -239,6 +239,9 @@ class MoEAssembler:
                 cfg["num_experts"] = num_experts
                 cfg["num_experts_per_tok"] = active_experts
 
+                # Ensure shared expert configuration exists
+                cfg["shared_expert_intermediate_size"] = cfg.get("intermediate_size", 0)
+
                 if sub_text_cfg:
                     sub_text_cfg["num_experts"] = num_experts
                     sub_text_cfg["num_experts_per_tok"] = active_experts

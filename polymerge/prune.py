@@ -128,12 +128,14 @@ class ModelPruner:
 
         writer.finalize(total_size=total_bytes)
 
-        # Update config.json
+        # Update config.json (root and nested text_config)
         cfg_path = m_path / "config.json"
         if cfg_path.exists():
             with open(cfg_path, "r", encoding="utf-8") as f:
                 cfg = json.load(f)
             cfg["num_hidden_layers"] = new_layer_idx
+            if "text_config" in cfg and isinstance(cfg["text_config"], dict):
+                cfg["text_config"]["num_hidden_layers"] = new_layer_idx
             with open(out_path / "config.json", "w", encoding="utf-8") as f:
                 json.dump(cfg, f, indent=2)
 
@@ -175,7 +177,14 @@ class ModelPruner:
         # Locate router tensors across layers
         router_keys = {}
         for k in reader.weight_map.keys():
-            if k.endswith(".router.proj.weight") or k.endswith(".mlp.gate.weight") or k.endswith(".block_sparse_moe.gate.weight"):
+            if (
+                k.endswith(".router.proj.weight")
+                or k.endswith(".mlp.gate.weight")
+                or k.endswith(".block_sparse_moe.gate.weight")
+                or k.endswith(".mlp.wg.weight")
+                or k.endswith(".router.weight")
+                or k.endswith(".gate.weight")
+            ):
                 m = re.search(r"\.(?:layers|blocks)\.(\d+)\.", k)
                 if m:
                     router_keys[int(m.group(1))] = k
@@ -272,17 +281,24 @@ class ModelPruner:
 
         writer.finalize(total_size=total_bytes)
 
-        # Update config.json
+        # Update config.json (root and nested text_config)
         cfg_path = m_path / "config.json"
         if cfg_path.exists():
             with open(cfg_path, "r", encoding="utf-8") as f:
                 cfg = json.load(f)
-            if "num_local_experts" in cfg:
-                cfg["num_local_experts"] = target_experts
-            if "num_experts" in cfg:
-                cfg["num_experts"] = target_experts
-            if "n_routed_experts" in cfg:
-                cfg["n_routed_experts"] = target_experts
+
+            def _update_exp_keys(target_dict: dict):
+                if "num_local_experts" in target_dict:
+                    target_dict["num_local_experts"] = target_experts
+                if "num_experts" in target_dict:
+                    target_dict["num_experts"] = target_experts
+                if "n_routed_experts" in target_dict:
+                    target_dict["n_routed_experts"] = target_experts
+
+            _update_exp_keys(cfg)
+            if "text_config" in cfg and isinstance(cfg["text_config"], dict):
+                _update_exp_keys(cfg["text_config"])
+
             with open(out_path / "config.json", "w", encoding="utf-8") as f:
                 json.dump(cfg, f, indent=2)
 

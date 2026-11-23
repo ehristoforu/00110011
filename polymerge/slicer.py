@@ -70,13 +70,15 @@ class LayerSlicer:
 
         writer.finalize(total_size=total_bytes)
 
-        # Update config.json num_hidden_layers
+        # Update config.json num_hidden_layers (both root and nested text_config)
         base_dir = first_model_reader.model_dir
         cfg_path = base_dir / "config.json"
         if cfg_path.exists():
             with open(cfg_path, "r", encoding="utf-8") as f:
                 cfg = json.load(f)
             cfg["num_hidden_layers"] = target_layer_idx
+            if "text_config" in cfg and isinstance(cfg["text_config"], dict):
+                cfg["text_config"]["num_hidden_layers"] = target_layer_idx
             with open(out_path / "config.json", "w", encoding="utf-8") as f:
                 json.dump(cfg, f, indent=2)
 
