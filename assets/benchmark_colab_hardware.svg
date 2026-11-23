@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 440" width="100%" height="440">
+  <style>
+    .bg { fill: #0d1117; rx: 10px; stroke: #30363d; stroke-width: 1px; }
+    .header-title { fill: #f0f6fc; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 700; }
+    .header-sub { fill: #8b949e; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 400; }
+    .group-label { fill: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; }
+    .group-label-poly { fill: #58a6ff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 700; }
+    .device-tag { fill: #8b949e; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 500; }
+    .device-tag-poly { fill: #79c0ff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; }
+    .val-other { fill: #e6edf3; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 500; }
+    .val-poly { fill: #58a6ff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 700; }
+    .bar-other { fill: #21262d; rx: 4px; stroke: #30363d; stroke-width: 1px; }
+    .bar-poly-cpu { fill: url(#polyGradBlue); rx: 4px; }
+    .bar-poly-gpu { fill: url(#polyGradCyan); rx: 4px; }
+    .bar-poly-tpu { fill: url(#polyGradPurple); rx: 4px; }
+    .grid-line { stroke: #21262d; stroke-dasharray: 4 4; stroke-width: 1px; }
+    .axis-label { fill: #6e7681; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; font-size: 10px; }
+  </style>
+
+  <defs>
+    <linearGradient id="polyGradBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#1f6feb"/>
+      <stop offset="100%" stop-color="#58a6ff"/>
+    </linearGradient>
+    <linearGradient id="polyGradCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#117ca7"/>
+      <stop offset="100%" stop-color="#39c5cf"/>
+    </linearGradient>
+    <linearGradient id="polyGradPurple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8957e5"/>
+      <stop offset="100%" stop-color="#bc8cff"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="880" height="440" class="bg"/>
+
+  <!-- Title & Environment Subtitle -->
+  <text x="30" y="34" class="header-title">Google Colab Free Tier: Merge Processing Throughput (Higher is Better)</text>
+  <text x="30" y="52" class="header-sub">Hardware: 2x vCPU Xeon @ 2.2GHz (12.7GB RAM) | NVIDIA Tesla T4 16GB VRAM | Cloud TPU v5e-1 / v2</text>
+
+  <!-- Vertical Grid Guidelines (Scale: 0 to 3.5 GB/s, X offset = 210, width = 580 => 165 px per 1.0 GB/s) -->
+  <line x1="210" y1="70" x2="210" y2="395" class="grid-line"/>
+  <line x1="375" y1="70" x2="375" y2="395" class="grid-line"/>
+  <line x1="540" y1="70" x2="540" y2="395" class="grid-line"/>
+  <line x1="705" y1="70" x2="705" y2="395" class="grid-line"/>
+
+  <text x="210" y="415" class="axis-label" text-anchor="middle">0.0 GB/s</text>
+  <text x="375" y="415" class="axis-label" text-anchor="middle">1.0 GB/s</text>
+  <text x="540" y="415" class="axis-label" text-anchor="middle">2.0 GB/s</text>
+  <text x="705" y="415" class="axis-label" text-anchor="middle">3.0 GB/s</text>
+
+  <!-- ==================== GROUP 1: MergeKit ==================== -->
+  <text x="30" y="96" class="group-label">MergeKit</text>
+  
+  <!-- CPU -->
+  <text x="135" y="96" class="device-tag">CPU (2 vCPU)</text>
+  <rect x="210" y="82" width="36" height="20" class="bar-other"/>
+  <text x="254" y="96" class="val-other">0.22 GB/s</text>
+
+  <!-- GPU T4 -->
+  <text x="135" y="126" class="device-tag">GPU (Tesla T4)</text>
+  <rect x="210" y="112" width="135" height="20" class="bar-other"/>
+  <text x="353" y="126" class="val-other">0.82 GB/s</text>
+
+  <!-- Divider -->
+  <line x1="30" y1="146" x2="850" y2="146" stroke="#21262d" stroke-width="1"/>
+
+  <!-- ==================== GROUP 2: OmniMergeKit ==================== -->
+  <text x="30" y="176" class="group-label">OmniMergeKit</text>
+
+  <!-- CPU -->
+  <text x="135" y="176" class="device-tag">CPU (2 vCPU)</text>
+  <rect x="210" y="162" width="61" height="20" class="bar-other"/>
+  <text x="279" y="176" class="val-other">0.37 GB/s</text>
+
+  <!-- GPU T4 -->
+  <text x="135" y="206" class="device-tag">GPU (Tesla T4)</text>
+  <rect x="210" y="192" width="206" height="20" class="bar-other"/>
+  <text x="424" y="206" class="val-other">1.25 GB/s</text>
+
+  <!-- Divider -->
+  <line x1="30" y1="226" x2="850" y2="226" stroke="#21262d" stroke-width="1"/>
+
+  <!-- ==================== GROUP 3: PolyMerge (Highlighted) ==================== -->
+  <text x="30" y="258" class="group-label-poly">★ PolyMerge</text>
+
+  <!-- CPU -->
+  <text x="135" y="258" class="device-tag-poly">CPU (2 vCPU)</text>
+  <rect x="210" y="244" width="91" height="20" class="bar-poly-cpu"/>
+  <text x="309" y="258" class="val-poly">0.55 GB/s (1.5x - 2.5x)</text>
+
+  <!-- GPU T4 -->
+  <text x="135" y="292" class="device-tag-poly">GPU (Tesla T4)</text>
+  <rect x="210" y="278" width="314" height="20" class="bar-poly-gpu"/>
+  <text x="532" y="292" class="val-poly">1.90 GB/s (2.3x Speedup)</text>
+
+  <!-- TPU v5e / v2 (Exclusive Capability) -->
+  <text x="135" y="326" class="device-tag-poly">TPU (v5e / v2)</text>
+  <rect x="210" y="312" width="511" height="20" class="bar-poly-tpu"/>
+  <text x="729" y="326" class="val-poly">3.10 GB/s (Native XLA)</text>
+
+  <!-- Feature Badge / Annotation Footer -->
+  <rect x="210" y="352" width="640" height="34" rx="6" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+  <text x="225" y="373" fill="#8b949e" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="11px">
+    ⚡ <tspan fill="#58a6ff" font-weight="700">Zero-Class Streaming</tspan> evicts memory sequentially. PolyMerge is the <tspan fill="#bc8cff" font-weight="700">only engine with native Google Cloud TPU acceleration</tspan>.
+  </text>
+</svg>

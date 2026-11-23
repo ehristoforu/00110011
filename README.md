@@ -37,9 +37,13 @@ PolyMerge is a unified engine for combining, transforming, and compressing Large
 
 ## Benchmarks
 
-Measurements conducted on consumer hardware (**NVIDIA GeForce RTX 3060 12GB VRAM / 32GB System RAM**), merging three 8B BF16 models.
+Measurements conducted across **Google Colab Free Tier environments** (Xeon CPU, Tesla T4 GPU, Cloud TPU) and local consumer hardware (**NVIDIA GeForce RTX 3060 12GB VRAM / 32GB System RAM**), merging three 8B BF16 models.
 
 <div align="center">
+
+![Google Colab Hardware Throughput Benchmark](assets/benchmark_colab_hardware.svg)
+
+<br/>
 
 ![Throughput Benchmark](assets/benchmark_throughput.svg)
 
