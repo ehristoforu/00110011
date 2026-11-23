@@ -193,6 +193,7 @@ class MergeEngine:
         console.print(f"  • Output saved to: [cyan]{out_path.absolute()}[/cyan]\n")
 
     def _copy_metadata(self, source_dir: Path, out_path: Path):
+        out_path.mkdir(parents=True, exist_ok=True)
         for pattern in ["*.json", "*.txt", "*.model", "tokenizer*"]:
             for f in source_dir.glob(pattern):
                 if not f.name.endswith(".safetensors.index.json") and not f.name.endswith(".safetensors"):
