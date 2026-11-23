@@ -57,7 +57,7 @@ Measurements conducted on consumer hardware (**NVIDIA GeForce RTX 3060 12GB VRAM
 |:---|:---:|:---:|:---:|
 | **Zero-Class Architecture Support** | No | Partial | **Full** |
 | **Multimodal / Vision Auto-Filter** | No | Manual | **Automatic** |
-| **All 9 Modern Merge Algorithms** | Partial | Partial | **Full** |
+| **All 12 Modern Merge Algorithms** | Partial | Partial | **Full** |
 | **MoE Upcycling (Dense to MoE)** | Limited | No | **Full (4 Targets)** |
 | **Shared Expert Support** | No | Limited | **Native** |
 | **Zero-Retraining Pruning** | No | Script-based | **Integrated** |
