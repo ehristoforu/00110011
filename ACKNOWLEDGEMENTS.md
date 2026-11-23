@@ -4,7 +4,7 @@ PolyMerge stands on the shoulders of giants in the open-source Large Language Mo
 
 ---
 
-### 1. [OmniMergeKit](https://github.com/omnimergekit/omnimergekit)
+### 1. [OmniMergeKit](https://github.com/mann1x/omnimergekit) by mann1x
 - **Contribution:** Pioneered the pure tensor-level merge streaming paradigm without dependence on rigid Hugging Face modeling classes. Introduced **Omnimerge v2** (OBIM top-k masking, DAREx $1/q$ rescaling, and EMR election), Soft-Transfer Router Recovery (T18 framework), and REAP expert pruning.
 - **License:** MIT License.
 
@@ -12,16 +12,20 @@ PolyMerge stands on the shoulders of giants in the open-source Large Language Mo
 - **Contribution:** The gold-standard pioneer of LLM model merging in the open-source community. Established standardized YAML merge specifications, Task Arithmetic, TIES, DARE, Model Stock, and initial Frankenmerge / Layer Slicing ideas.
 - **License:** GNU Lesser General Public License v3.0 (LGPL-3.0).
 
-### 3. [MergeKitty](https://github.com/cg123/mergekitty)
-- **Contribution:** Advanced extensions of MergeKit with enhanced LoRA merging, LayerShuffle, and Tokensurgeon utilities.
+### 3. [MergeKitty](https://github.com/allura-org/mergekitty) by Allura
+- **Contribution:** Advanced extensions of MergeKit with enhanced LoRA merging, LayerShuffle, and tokensurgeon utilities.
 - **License:** GNU Lesser General Public License v3.0 (LGPL-3.0).
 
-### 4. [Mergoo](https://github.com/mergoo-ai/mergoo)
+### 4. [Mergoo](https://github.com/Leeroo-AI/mergoo) by Leeroo AI
 - **Contribution:** Pioneered early open-weights MoE expert composition (Llama/Mistral MoE assembly) and safe saving mechanisms for multi-expert checkpoints.
 - **License:** GNU Lesser General Public License v3.0 (LGPL-3.0).
 
-### 5. [MergeUI](https://github.com/mergeui/mergeui)
+### 5. [MergeUI](https://github.com/naskio/mergeui) by Mehdi Nassim Khodja (naskio)
 - **Contribution:** Web-based UI interfaces and graph visualization paradigms for model merging workflows.
+- **License:** Apache License 2.0.
+
+### 6. [PruneMe](https://github.com/arcee-ai/PruneMe) by Arcee AI
+- **Contribution:** Empirical layer pruning strategies for LLMs based on block similarity metrics without backpropagation.
 - **License:** Apache License 2.0.
 
 ---

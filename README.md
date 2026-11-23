@@ -131,11 +131,12 @@ Detailed technical documentation and mathematical formulations:
 ## Upstream Acknowledgements
 
 PolyMerge integrates and expands upon algorithms and research from the open-source community:
-- **[OmniMergeKit](https://github.com/omnimergekit/omnimergekit)**: Tensor-level streaming architecture, Omnimerge v2, and router recovery algorithms.
+- **[OmniMergeKit](https://github.com/mann1x/omnimergekit)**: Tensor-level streaming architecture, Omnimerge v2, and router recovery algorithms.
 - **[MergeKit](https://github.com/arcee-ai/mergekit)**: Merge methods, task arithmetic, and YAML configuration design.
-- **[MergeKitty](https://github.com/cg123/mergekitty)**: Advanced adapter handling and layer manipulation.
-- **[Mergoo](https://github.com/mergoo-ai/mergoo)**: Initial MoE composition paradigms.
-- **[MergeUI](https://github.com/mergeui/mergeui)**: Visual merging and graph schema design.
+- **[MergeKitty](https://github.com/allura-org/mergekitty)**: Advanced adapter handling, LayerShuffle, and tokensurgeon utilities.
+- **[Mergoo](https://github.com/Leeroo-AI/mergoo)**: Initial MoE composition paradigms.
+- **[MergeUI](https://github.com/naskio/mergeui)**: Visual merging and graph schema design.
+- **[PruneMe](https://github.com/arcee-ai/PruneMe)**: Layer pruning heuristics based on inter-block feature similarity.
 
 Detailed references and paper citations are provided in [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md).
 
